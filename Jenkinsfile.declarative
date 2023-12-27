@@ -1,0 +1,30 @@
+Pipeline{
+	agent any
+	
+    Stages{
+		stage('checkout'){
+			steps{
+				git branch: 'master' URL: 'https://github.com/Lokeshwork/java_repo1.git'
+				sh "mvn clean package"
+				}
+			}
+		
+		stage('test'){
+			steps{
+				echo 'This is test stage'
+				}
+			}
+		
+		stage('Build')
+			steps{
+				sh 'mvn clean package'
+				}
+			}
+		
+		stage('deploy'){
+			steps{
+				sh 'sudo cp /hometarget/*.war /opt/tomcat/webapps'
+				}
+			}
+		}
+}
