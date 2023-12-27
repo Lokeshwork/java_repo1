@@ -23,7 +23,7 @@ Pipeline{
 		
 		stage('deploy'){
 			steps{
-				sh 'sudo cp /hometarget/*.war /opt/tomcat/webapps'
+				sh 'sudo cp /hometarget/*.war /opt/tomcat/apache-tomcat-9.0.84/webapps'
 				}
 			}
 		}
