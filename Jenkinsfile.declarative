@@ -18,7 +18,7 @@ stages{
 	stage('dockerbuild'){ 
 	steps{
 			script{
-					sh "docker build t ${REPO_URI}:${IMAGE_TAG} ."
+					sh "docker build t ${REPO_URL}:${IMAGE_TAG} ."
 				}
 		}
 	}
@@ -28,8 +28,8 @@ stages{
 			script {
 					sh """aws ecr get-login-password \
 			--region ${AWS_DEFAULT_REGION} \
-			| docker login
-			--username AWS 1
+			| docker login \
+			--username AWS \
 			--password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"""
 			}
 		}
