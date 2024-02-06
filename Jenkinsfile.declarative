@@ -1,30 +1,54 @@
-Pipeline{
+pipeline {
 	agent any
+	environment {
+	AWS_ACCOUNT_ID="115069646213"
+	AWS_DEFAULT_REGION="us-east-1"
+	IMAGE_REPO_NAME="simple-time-app"
+	IMAGE_TAG="v1"
+	REPO_URL = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/simple-time-app"
+	}
+
+stages{
+	stage('Git Checkout'){
+		steps{
+				git branch: 'master', url: 'https://github.com/Lokeshwork/java_repo1.git'
+		}
+	}
+
+	stage('dockerbuild'){ 
+	steps{
+			script{
+					sh "docker build t ${REPO_URI}:${IMAGE_TAG} ."
+				}
+		}
+	}
 	
-    Stages{
-		stage('checkout'){
-			steps{
-				git branch: 'master' URL: 'https://github.com/Lokeshwork/java_repo1.git'
-				sh "mvn clean package"
-				}
+	stage('logging to AWS ECR'){
+		steps{
+			script {
+					sh """aws ecr get-login-password \
+			--region ${AWS_DEFAULT_REGION} \
+			| docker login
+			--username AWS 1
+			--password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"""
 			}
-		
-		stage('test'){
-			steps{
-				echo 'This is test stage'
-				}
+		}
+	}
+	
+	stage('ECR push') {
+		steps{
+			script {
+			sh """docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"""
 			}
-		
-		stage('Build'){
-			steps{
-				sh 'mvn clean package'
-				}
-			}
-		
-		stage('deploy'){
-			steps{
-				sh 'sudo cp /hometarget/*.war /opt/tomcat/apache-tomcat-9.0.84/webapps'
+		}
+	}
+	
+	stage('deploy to docker server') {
+		steps{
+			script {
+					sh "docker run -d -p 300:8880 ${REPO_URL}:${IMAGE_TAG}"
 				}
 			}
 		}
+	}
 }
