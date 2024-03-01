@@ -3,5 +3,7 @@ WORKDIR /javaapp
 COPY . .
 RUN mvn clean install
 
-FROM adhig93/tomcat-conf
-COPY --from=build /javaapp/target/*.war /usr/local/tomcat/webapps/
+FROM openjdk:9
+WORKDIR /app
+COPY --from=build /java/target/gs-maven-0.1.0.jar app.jar
+CMD ["java", "-jar", "app.jar"]
